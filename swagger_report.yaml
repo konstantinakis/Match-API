@@ -1,0 +1,255 @@
+openapi: 3.0.0
+info:
+  title: Match API
+  version: 1.0.0
+servers:
+  - url: localhost:8090/api
+tags:
+  - name: Match Requests
+  - name: Match Odds Requests
+paths:
+  /matches:
+    get:
+      tags:
+        - Match Requests
+      summary: Get All Matches
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    post:
+      tags:
+        - Match Requests
+      summary: Add Match
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                description: a game of football
+                match_date: 30/3/2022
+                match_time: '10.35'
+                team_a: AEK
+                team_b: PAO
+                sport: FOOTBALL
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /matches/{id}:
+    get:
+      tags:
+        - Match Requests
+      summary: Get Match By ID
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the match to be returned"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Match Requests
+      summary: Delete Match
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the match to be deleted"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /matches/sport/{sport}:
+    get:
+      tags:
+        - Match Requests
+      summary: Get Match By Sport
+      parameters:
+        - in: "path"
+          name: sport
+          required: true
+          schema:
+            type: string
+            enum: [FOOTBALL, BASKETBALL]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /matches/{ID}:
+    put:
+      tags:
+        - Match Requests
+      summary: Update Match
+      parameters:
+      - name: "ID"
+        in: "path"
+        description: "ID of the match to be updated"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                description: description text
+                match_date: 30/3/2022
+                match_time: '00.00'
+                team_a: teamA
+                team_b: teamB
+                sport: BASKETBALL
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /matches/:
+    delete:
+      tags:
+        - Match Requests
+      summary: Delete All Matches
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match_odds:
+    get:
+      tags:
+        - Match Odds Requests
+      summary: Get All Match Odds
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Match Odds Requests
+      summary: Delete All Match Odds
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /match_odds/{id}:
+    get:
+      tags:
+        - Match Odds Requests
+      summary: Get Match Odds By Match ID
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the match odds to be returned"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - Match Odds Requests
+      summary: Update Match Odds
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the match odds to be updated"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                odd: 4.5
+                specifier: '2'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Match Odds Requests
+      summary: Delete Match Odds
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the match to be deleted"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /matches/{match_id}/match_odds:
+    post:
+      tags:
+        - Match Odds Requests
+      summary: Add Match Odds
+      parameters:
+      - name: "match_id"
+        in: "path"
+        description: "ID of the match that the odds will be added"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                odd: 1.5
+                specifier: X
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Match Odds Requests
+      summary: Delete All Match Odds Of Match
+      parameters:
+      - name: "match_id"
+        in: "path"
+        description: "ID of the match that its odds will be deleted"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
