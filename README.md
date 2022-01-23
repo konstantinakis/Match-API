@@ -7,6 +7,7 @@ Project is created with:
 * Spring Boot: 2.6.2
 * PostgreSQL: 14.1
 * Maven: 3.6.3
+* Log4j: 1.2.17
 
 
 ## Installation
