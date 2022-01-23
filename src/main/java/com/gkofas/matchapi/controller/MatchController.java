@@ -3,6 +3,7 @@ package com.gkofas.matchapi.controller;
 import com.gkofas.matchapi.model.*;
 import com.gkofas.matchapi.repository.IMatchOddsRepository;
 import com.gkofas.matchapi.repository.IMatchRepository;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,13 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api")
 public class MatchController {
+    // reference to our logger
+    private static final Logger LOGGER = Logger.getLogger(MatchController.class);
 
     @Autowired
-    IMatchRepository matchRepository;
+    private IMatchRepository matchRepository;
     @Autowired
-    IMatchOddsRepository matchOddsRepository;
+    private IMatchOddsRepository matchOddsRepository;
 
     /**
      * Returns a list with all the {@link Match} instances that exist in the db.
@@ -37,12 +40,14 @@ public class MatchController {
 
             if (matches.isEmpty()) {
                 responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                LOGGER.trace("No matches available");
             } else {
                 responseEntity = new ResponseEntity<>(matches, HttpStatus.OK);
+                LOGGER.trace("Matches were returned successfully.");
             }
         } catch (Exception e) {
             responseEntity = new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            //todo log
+            LOGGER.error("Could not return all matches", e);
         }
         return responseEntity;
     }
@@ -60,8 +65,10 @@ public class MatchController {
         if (matchData.isPresent()) {
             MatchDTO matchDTOData = matchData.get().toDTO();
             responseEntity = new ResponseEntity<>(matchDTOData, HttpStatus.OK);
+            LOGGER.trace("Match was returned successfully.");
         } else {
             responseEntity =  new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            LOGGER.trace("No match was found");
         }
         return responseEntity;
     }
@@ -81,8 +88,10 @@ public class MatchController {
         }
         if (matches.isEmpty()) {
             responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            LOGGER.trace("No matches available");
         } else {
             responseEntity = new ResponseEntity<>(matches, HttpStatus.OK);
+            LOGGER.trace("Matches were returned successfully.");
         }
         return responseEntity;
     }
@@ -105,8 +114,10 @@ public class MatchController {
                                                             .setSport(match.getSport())
                                                             .build());
             responseEntity = new ResponseEntity<>(newMatch.toDTO(), HttpStatus.CREATED);
+            LOGGER.trace("A match was created successfully.");
         } catch (Exception e) {
             responseEntity = new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            LOGGER.error("Match could not be saved", e);
         }
         return responseEntity;
     }
@@ -134,7 +145,9 @@ public class MatchController {
             matchObj.setTeamA(match.getTeamA());
             matchObj.setTeamB(match.getTeamB());
             responseEntity = new ResponseEntity<>(matchRepository.save(matchObj).toDTO(), HttpStatus.OK);
+            LOGGER.trace("Match was updated successfully.");
         } else {
+            LOGGER.trace("Match could not be found");
             responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return responseEntity;
@@ -152,9 +165,10 @@ public class MatchController {
         try {
             matchRepository.deleteById(id);
             responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            LOGGER.trace("Match was deleted successfully.");
         } catch (Exception e) {
             responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            //todo logger
+            LOGGER.error("Match could not be deleted.", e);
         }
         return responseEntity;
     }
@@ -170,9 +184,10 @@ public class MatchController {
         try {
             matchRepository.deleteAll();
             responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            LOGGER.trace("Matches were deleted successfully.");
         } catch (Exception e) {
             responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            //todo logger
+            LOGGER.error("Matches could not be deleted.", e);
         }
         return responseEntity;
     }
@@ -193,12 +208,14 @@ public class MatchController {
 
             if (matches.isEmpty()) {
                 responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                LOGGER.trace("No match odds available");
             } else {
                 responseEntity = new ResponseEntity<>(matches, HttpStatus.OK);
+                LOGGER.trace("Matche odds were returned successfully.");
             }
         } catch (Exception e) {
             responseEntity = new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            //todo log
+            LOGGER.error("Could not return all match odds", e);
         }
         return responseEntity;
     }
@@ -221,8 +238,10 @@ public class MatchController {
                 matchOddsDTOs.add(matchOdd.toDTO());
             }
             responseEntity = new ResponseEntity<>(matchOddsDTOs, HttpStatus.OK);
+            LOGGER.trace("Match odds were returned successfully.");
         } else {
             responseEntity = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            LOGGER.trace("No match odds were found");
         }
         return responseEntity;
     }
@@ -244,12 +263,14 @@ public class MatchController {
                         ESpecifier.getESpecifierFrom(matchOdd.getSpecifier()), matchOdd.getOdd(), match.get());
                 MatchOddsDTO matchOddsDTO = matchOddsRepository.save(newMatchOdds).toDTO();
                 responseEntity = new ResponseEntity<>(matchOddsDTO, HttpStatus.CREATED);
+                LOGGER.trace("Match odds were added successfully");
             } else {
                 responseEntity = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+                LOGGER.trace("No match was found with the given id");
             }
         } catch (Exception e) {
             responseEntity = new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            //todo catch exception
+            LOGGER.trace("Could not create match odds", e);
         }
         return responseEntity;
     }
@@ -274,8 +295,10 @@ public class MatchController {
             matchOddsObj.setOdd(matchOddsDTO.getOdd());
             matchOddsObj.setSpecifier(ESpecifier.getESpecifierFrom(matchOddsDTO.getSpecifier()));
             responseEntity = new ResponseEntity<>(matchOddsRepository.save(matchOddsObj).toDTO(),  HttpStatus.OK);
+            LOGGER.trace("Match odds were updated successfully");
         } else {
             responseEntity = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            LOGGER.trace("No match odds were found with the given id");
         }
         return responseEntity;
     }
@@ -292,9 +315,10 @@ public class MatchController {
         try {
             matchOddsRepository.deleteById(id);
             responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            LOGGER.trace("Match odds were deleted successfully");
         } catch (Exception e) {
             responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            //todo logger
+            LOGGER.error("Could not delete match odds", e);
         }
         return responseEntity;
     }
@@ -310,9 +334,10 @@ public class MatchController {
         try {
             matchOddsRepository.deleteAll();
             responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            LOGGER.trace("All the match odds were deleted successfully");
         } catch (Exception e) {
             responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            //todo logger
+            LOGGER.error("Could not delete all the match odds", e);
         }
         return responseEntity;
     }
@@ -330,8 +355,10 @@ public class MatchController {
         if (matchRepository.existsById(matchID)) {
             matchOddsRepository.deleteByMatchId(matchID);
             responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            LOGGER.trace("Match odds were deleted successfully");
         } else {
             responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            LOGGER.trace("No match was found with the given id");
         }
         return responseEntity;
     }
